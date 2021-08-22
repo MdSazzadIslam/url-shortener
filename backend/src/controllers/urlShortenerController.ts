@@ -12,23 +12,49 @@ export class UrlShortenerController {
   }
 
   /**
-   * Fetching a longurl
+   * Fetching all urls
    * @route GET
    * @access Public
    */
-  public getLongUrl = (req: Request, res: Response) => {
-    const urlPart = url.parse(req.url, true); //receving url request
-    let shortUrl: string = urlPart.query.shortUrl as string; // to get query from urlPart
+  public getUrls = (req: Request, res: Response) => {
+    this.urlShortener
+      .find()
+      .then((data) => {
+        if (data != null) {
+          return res.status(200).json({ data });
+        }
+        return res.status(402).json({
+          success: false,
+          status: 404,
+          message: "No url found",
+        });
+      })
+      .catch((error: Error) => {
+        return res.status(500).json({
+          success: false,
+          status: 500,
+          message: "Error occured while fetching the data " + error.message,
+        });
+      });
+  };
 
+  /**
+   * Fetching a longurl
+   * @route GET/shortUrl:
+   * @access Public
+   */
+  public getLongUrl = (req: Request, res: Response) => {
+    const shortUrl = req.params.shortUrl; //receving url request
+    console.log(shortUrl);
     this.urlShortener
       .findOne({ shortUrl })
       .then((data) => {
         if (data != null) {
-          return res.status(200).json({ longUrl: data.shortUrl });
+          return res.status(200).json({ longUrl: data.longUrl });
         }
         return res.status(402).json({
           success: false,
-          status: 402,
+          status: 404,
           message: `No url found for this Url :  ${shortUrl}`,
         });
       })
@@ -49,6 +75,9 @@ export class UrlShortenerController {
   //Converting a long Url to Short URL then saving the record into the databse
   public createShortUrl = (req: Request, res: Response) => {
     const longUrl = req.body.longUrl;
+    const port = process.env.PORT;
+    const preUrl = "http://localhost:" + `${port}` + "/api/v1/urlshorteners"; // Since i am going to save only hasing data without URL into the database
+    //that is why we need preUrl so that system can send full url to the customers.
 
     //if the request URL is valid then going to sort the url
     if (validUrl.isUri(longUrl)) {
@@ -58,19 +87,17 @@ export class UrlShortenerController {
           //if long URL  not exist in the database then going to insert otherwise return the existing documents
 
           if (data === null) {
-            const PORT = process.env.PORT;
             const urlCode = nanoid(5); //generating unique id to handle concurrency
 
             // constructing the short URL by the help of
 
-            const cryptoUrl = crypto
+            const shortUrl = crypto
               .randomBytes(Math.ceil((5 * 3) / 4))
               .toString("base64")
               .replace(/\+/g, "0")
               .replace(/\//g, "0")
               .slice(0, 6);
 
-            const shortUrl = "http://localhost:" + `${PORT}` + "/" + cryptoUrl;
             // adding urlCode to make the sort url more unique
             let visit: number = 0;
 
@@ -84,7 +111,9 @@ export class UrlShortenerController {
             return url
               .save()
               .then((result) => {
-                res.status(200).json({ shortUrl });
+                res
+                  .status(200)
+                  .json({ shortUrl: `${preUrl}` + "/" + shortUrl });
               })
               .catch((error: Error) => {
                 return res.status(500).json({
@@ -96,7 +125,9 @@ export class UrlShortenerController {
           }
           // since the document exists, we return it without creating a new entry
 
-          return res.status(200).json({ shortUrl: data.shortUrl });
+          return res
+            .status(200)
+            .json({ shortUrl: `${preUrl}` + "/" + data.shortUrl });
         })
         .catch((error: Error) => {
           return res.status(400).json({

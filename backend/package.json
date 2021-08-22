@@ -1,8 +1,8 @@
 {
   "name": "url-shortener",
   "version": "1.0.0",
-  "description": "A simple Node.js, Express.js and Typescript application for URL SHORTENER",
-  "main": "server.js",
+  "description": "A simple SHORTENER written in Typescript, Node.js, Express.js, MongoDB and React.js",
+  "main": "server.ts",
   "scripts": {
     "build-ts": "tsc",
     "build": "npm run build-ts",

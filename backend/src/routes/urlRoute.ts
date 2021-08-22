@@ -12,7 +12,8 @@ export default class UrlRoute {
   }
 
   public configRoutes() {
-    this.router.get("/", this.urlShortenerController.getLongUrl);
+    this.router.get("/", this.urlShortenerController.getUrls);
+    this.router.get("/:shortUrl", this.urlShortenerController.getLongUrl);
     this.router.post("/", this.urlShortenerController.createShortUrl);
   }
 }
