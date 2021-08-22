@@ -15,7 +15,6 @@ const App: React.FC = () => {
   const [submitted, setSubmitted] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debugger;
     e.preventDefault();
     setUrlShortener((urlShortener) => ({
       ...urlShortener,
@@ -25,18 +24,15 @@ const App: React.FC = () => {
 
   const handleSubmit = (
     e: React.FormEvent,
-    user: IUrlShortener | any
+    urlShortener: IUrlShortener
   ): void => {
     e.preventDefault();
 
-    debugger;
     setSubmitted(true);
-    createShortUrl(user)
+    createShortUrl(urlShortener)
       .then(({ data }: any) => {
-        debugger;
-
         setUrlShortener({
-          longUrl: data.shortUrl,
+          longUrl: urlShortener.longUrl,
           shortUrl: data.shortUrl,
         });
         //setSubmitted(false);

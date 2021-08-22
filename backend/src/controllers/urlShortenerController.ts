@@ -56,10 +56,8 @@ export class UrlShortenerController {
         .findOne({ longUrl })
         .then((data) => {
           //if long URL  not exist in the database then going to insert otherwise return the existing documents
-          console.log("before", data);
 
           if (data === null) {
-            console.log("after", data);
             const PORT = process.env.PORT;
             const urlCode = nanoid(5); //generating unique id to handle concurrency
 
@@ -75,7 +73,7 @@ export class UrlShortenerController {
             const shortUrl = "http://localhost:" + `${PORT}` + "/" + cryptoUrl;
             // adding urlCode to make the sort url more unique
             let visit: number = 0;
-            console.log(longUrl);
+
             const url = new this.urlShortener({
               longUrl,
               shortUrl,
@@ -97,8 +95,8 @@ export class UrlShortenerController {
               });
           }
           // since the document exists, we return it without creating a new entry
-          console.log("final", data);
-          return res.status(200).json({ data });
+
+          return res.status(200).json({ shortUrl: data.shortUrl });
         })
         .catch((error: Error) => {
           return res.status(400).json({
