@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Button from "./components/Button";
 import TextBox from "./components/TextBox";
 import { IUrlShortener } from "./types/urlShortenerType";
-import { createShortUrl } from "./services/urlShortenerService";
+import { createShortUrl, getLongUrl } from "./services/urlShortenerService";
 
 import "./App.css";
 
@@ -13,6 +13,9 @@ const App: React.FC = () => {
   };
   const [urlShortener, setUrlShortener] = useState<IUrlShortener>(initialState);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [choice, setChoice] = useState<string>("1");
+  const [url, setUrl] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -28,26 +31,54 @@ const App: React.FC = () => {
   ): void => {
     e.preventDefault();
 
+    choice === "1"
+      ? longToShort(e, urlShortener)
+      : shortToLong(e, urlShortener);
+  };
+
+  const longToShort = (e: React.FormEvent, urlShortener: IUrlShortener) => {
+    debugger;
+    e.preventDefault();
+    setError("");
     setSubmitted(true);
     createShortUrl(urlShortener)
       .then(({ data }: any) => {
-        setUrlShortener({
-          longUrl: urlShortener.longUrl,
-          shortUrl: data.shortUrl,
-        });
-        //setSubmitted(false);
+        debugger;
+
+        setUrl(data.shortUrl);
+        setSubmitted(false);
+        console.log(data);
       })
       .catch((error: Error) => {
         setSubmitted(false);
-        console.error(error);
+        setError(error.message);
+        console.error(error.message);
+        setUrl("");
       });
-
-    clearRecord();
   };
 
-  const clearRecord = () => {
-    setUrlShortener(initialState);
-    setSubmitted(false);
+  const shortToLong = (e: React.FormEvent, urlShortener: IUrlShortener) => {
+    e.preventDefault();
+    setError("");
+    setSubmitted(true);
+    debugger;
+    getLongUrl(urlShortener)
+      .then(({ data }: any) => {
+        debugger;
+        setUrl(data.longUrl);
+        setSubmitted(false);
+      })
+      .catch((error: Error) => {
+        setSubmitted(false);
+        setError(error.message);
+        console.error(error.message);
+        setUrl("");
+      });
+  };
+
+  const selectChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    const element = e.target as HTMLSelectElement;
+    setChoice(element.value);
   };
 
   return (
@@ -59,13 +90,31 @@ const App: React.FC = () => {
               <strong>URL </strong> Shortener <span />
             </h4>
 
-            {urlShortener.shortUrl.length > 0 ? (
+            {error.length > 0 ? (
               <div>
-                <h5>{urlShortener.shortUrl}</h5>
+                <h6 style={{ color: "red" }}>{error}</h6>
+              </div>
+            ) : null}
+
+            {url.length > 0 ? (
+              <div>
+                <h6>{url}</h6>
               </div>
             ) : null}
 
             <form onSubmit={(e) => handleSubmit(e, urlShortener)}>
+              <select
+                name="urlShortener"
+                id="urlShortener"
+                onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                  selectChange(e)
+                }
+                value={choice}
+              >
+                <option value="1">Long to Short</option>
+                <option value="2">Sort to Long</option>
+              </select>
+
               <TextBox
                 type="text"
                 disabled={false}

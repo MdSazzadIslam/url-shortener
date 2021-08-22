@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { UrlShortener, IUrlShortener } from "../models/urlShortenerModel";
-import validUrl from "valid-url";
 import { nanoid } from "nanoid";
 import crypto from "crypto";
-import url from "url";
 
 export class UrlShortenerController {
   private urlShortener = UrlShortener;
@@ -19,7 +17,7 @@ export class UrlShortenerController {
   public getUrls = (req: Request, res: Response) => {
     this.urlShortener
       .find()
-      .then((data) => {
+      .then((data: IUrlShortener[]) => {
         if (data != null) {
           return res.status(200).json({ data });
         }
@@ -44,7 +42,7 @@ export class UrlShortenerController {
    * @access Public
    */
   public getLongUrl = (req: Request, res: Response) => {
-    const shortUrl = req.params.shortUrl; //receving url request
+    const shortUrl = req.params.shortUrl;
     console.log(shortUrl);
     this.urlShortener
       .findOne({ shortUrl })
@@ -80,7 +78,10 @@ export class UrlShortenerController {
     //that is why we need preUrl so that system can send full url to the customers.
 
     //if the request URL is valid then going to sort the url
-    if (validUrl.isUri(longUrl)) {
+
+    const valid = isValidURL(longUrl);
+
+    if (valid) {
       this.urlShortener
         .findOne({ longUrl })
         .then((data) => {
@@ -145,3 +146,17 @@ export class UrlShortenerController {
     }
   };
 }
+
+const isValidURL = (str: string) => {
+  // copy this source code from stackoverflow
+  var pattern = new RegExp(
+    "^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$",
+    "i"
+  ); // fragment locator
+  return !!pattern.test(str);
+};

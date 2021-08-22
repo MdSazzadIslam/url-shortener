@@ -33,7 +33,6 @@
     "@types/mocha": "^9.0.0",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^16.6.2",
-    "@types/valid-url": "^1.0.3",
     "ts-node": "^10.2.1",
     "typescript": "^4.3.5"
   },
@@ -49,8 +48,6 @@
     "mocha": "^9.1.0",
     "mongoose": "^5.13.7",
     "nanoid": "^3.1.25",
-    "url": "^0.11.0",
-    "valid-url": "^1.0.9",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.5"
   }
