@@ -1,8 +1,9 @@
-import { App } from "./src/app";
+import App from "./src/app";
 import * as dotenv from "dotenv";
 import logger from "./src/utils/logger";
 
 dotenv.config();
+
 enum ExitStatus {
   Failure = 1,
   Success = 0,
@@ -21,20 +22,30 @@ process.on("uncaughtException", (error) => {
   process.exit(1);
 });
 
-(async (): Promise<void> => {
-  const app = new App(process.env.PORT);
-  app.start();
-  const exitSignals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGQUIT"];
-  for (const exitSignal of exitSignals) {
-    process.on(exitSignal, async () => {
-      try {
-        await app.close();
-        logger.info("App shutdown with success");
-        process.exit(ExitStatus.Success);
-      } catch (error) {
-        logger.error("App is shutdown accidently");
-        process.exit(ExitStatus.Failure);
-      }
-    });
+export async function bootstrap() {
+  try {
+    const server = new App(parseInt(process.env.PORT as string) || 5000);
+    server.start();
+    const exitSignals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGQUIT"];
+    for (const exitSignal of exitSignals) {
+      process.on(exitSignal, async () => {
+        try {
+          await server.close();
+          logger.info("App shutdown with success");
+          process.exit(ExitStatus.Success);
+        } catch (error) {
+          logger.error("App shutdown abnormally");
+          process.exit(ExitStatus.Failure);
+        }
+      });
+    }
+  } catch (error) {
+    logger.error("App shutdown abnormally");
+    process.exit(1);
   }
+}
+
+//An Immediately-invoked Function Expression is a way to execute functions immediately, as soon as they are created.
+(async () => {
+  await bootstrap();
 })();

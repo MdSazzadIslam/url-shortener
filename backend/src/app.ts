@@ -8,10 +8,10 @@ import { connect, close } from "./config/db";
 
 dotenv.config();
 
-export class App {
+class App {
   public app: Application;
 
-  constructor(private port = process.env.PORT) {
+  constructor(private port: number) {
     this.app = express();
     Middleware.init(this.app);
     Routes.init(this.app);
@@ -43,3 +43,4 @@ export class App {
       .on("error", (e) => logger.error(e));
   }
 }
+export default App;

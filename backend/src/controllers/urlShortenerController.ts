@@ -16,10 +16,10 @@ export class UrlShortenerController {
    */
   public getUrls = (req: Request, res: Response) => {
     this.urlShortener
-      .find()
+      .find({})
       .then((data: IUrlShortener[]) => {
         if (data != null) {
-          return res.status(200).json({ data });
+          return res.status(200).json(data);
         }
         return res.status(402).json({
           success: false,
