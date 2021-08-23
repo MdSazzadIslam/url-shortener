@@ -8,7 +8,6 @@ const getLongUrl = async (
   try {
     debugger;
     const sortUrl: string = data.longUrl.substr(data.longUrl.length - 6); //Extracting last six character data.longUrl;
-    console.log(sortUrl);
     const res: AxiosResponse<ApiResponse> = await http.get(`/${sortUrl}`);
     return res;
   } catch (error) {

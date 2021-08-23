@@ -4,35 +4,27 @@ import Middleware from "./middlewares";
 import { loadErrorHandlers } from "./utils/errorHandlers";
 import * as dotenv from "dotenv";
 import logger from "./utils/logger";
-import { connect, close } from "./config/db";
 
+import DBService from "./config";
 dotenv.config();
 
 class App {
   public app: Application;
-
+  public dbService: DBService;
   constructor(private port: number) {
     this.app = express();
-    Middleware.init(this.app);
-    Routes.init(this.app);
+    this.dbService = new DBService();
     this.config();
   }
 
   public async config(): Promise<void> {
-    await this.databaseSetup();
+    Middleware.init(this.app);
+    Routes.init(this.app);
     loadErrorHandlers(this.app);
-  }
-
-  private async databaseSetup(): Promise<void> {
-    const db: string = process.env.MONGO_URI as string;
-    await connect({ db });
   }
 
   public getApp(): Application {
     return this.app;
-  }
-  public async close(): Promise<void> {
-    await close();
   }
 
   public start(): void {

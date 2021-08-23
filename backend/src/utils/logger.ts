@@ -4,15 +4,15 @@ import DailyRotateFile from "winston-daily-rotate-file";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-let dir: string = process.env.LOG_DIRECTORY || "";
+let dir: string = process.env.LOG_DIRECTORY as string;
 
 // create directory if it is not present
 if (!fs.existsSync(dir)) {
   // Create the directory if it does not exist
   fs.mkdirSync(dir);
 }
-
-const logLevel = process.env.NODE_ENV === "dev" ? "debug" : "warn";
+const isProduction = process.env.NODE_ENV;
+const logLevel = isProduction != "production" ? "debug" : "warn";
 
 const logFormat = format.combine(
   format.colorize(),
@@ -45,6 +45,14 @@ export default createLogger({
       format: logFormat,
     }),
   ],
+  levels: {
+    silly: 0,
+    debug: 1,
+    info: 2,
+    warn: 3,
+    error: 4,
+  },
+
   exceptionHandlers: [new DailyRotateFile(options.file)],
   exitOnError: false, // do not exit on handled exceptions
 });

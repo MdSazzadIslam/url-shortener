@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { UrlShortener, IUrlShortener } from "../models/urlShortenerModel";
 import { nanoid } from "nanoid";
 import crypto from "crypto";
-
+import { isValidURL } from "../utils/index";
 export class UrlShortenerController {
   private urlShortener = UrlShortener;
   constructor() {
@@ -17,6 +17,7 @@ export class UrlShortenerController {
   public getUrls = (req: Request, res: Response) => {
     this.urlShortener
       .find({})
+      .exec()
       .then((data: IUrlShortener[]) => {
         if (data != null) {
           return res.status(200).json(data);
@@ -42,10 +43,11 @@ export class UrlShortenerController {
    * @access Public
    */
   public getLongUrl = (req: Request, res: Response) => {
-    const shortUrl = req.params.shortUrl;
-    console.log(shortUrl);
+    const { shortUrl } = req.params;
+
     this.urlShortener
       .findOne({ shortUrl })
+      .exec()
       .then((data) => {
         if (data != null) {
           return res.status(200).json({ longUrl: data.longUrl });
@@ -84,6 +86,7 @@ export class UrlShortenerController {
     if (valid) {
       this.urlShortener
         .findOne({ longUrl })
+        .exec()
         .then((data) => {
           //if long URL  not exist in the database then going to insert otherwise return the existing documents
 
@@ -111,8 +114,9 @@ export class UrlShortenerController {
             //creating a new URL document
             return url
               .save()
+
               .then((result) => {
-                res
+                return res
                   .status(200)
                   .json({ shortUrl: `${preUrl}` + "/" + shortUrl });
               })
@@ -146,17 +150,3 @@ export class UrlShortenerController {
     }
   };
 }
-
-const isValidURL = (str: string) => {
-  // copy this source code from stackoverflow
-  var pattern = new RegExp(
-    "^(https?:\\/\\/)?" + // protocol
-      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[-a-z\\d_]*)?$",
-    "i"
-  ); // fragment locator
-  return !!pattern.test(str);
-};

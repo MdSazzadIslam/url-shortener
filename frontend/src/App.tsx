@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Button from "./components/Button";
 import TextBox from "./components/TextBox";
 import { IUrlShortener } from "./types/urlShortenerType";
@@ -17,12 +17,19 @@ const App: React.FC = () => {
   const [choice, setChoice] = useState<string>("1");
   const [url, setUrl] = useState<string>("");
 
+  const longUrlRef = useRef<HTMLInputElement | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setUrlShortener((urlShortener) => ({
       ...urlShortener,
       [e.target.name]: e.target.value,
     }));
+  };
+
+  const onFocus = () => {
+    if (!longUrlRef.current) return;
+    longUrlRef.current.blur();
   };
 
   const handleSubmit = (
@@ -44,7 +51,6 @@ const App: React.FC = () => {
     createShortUrl(urlShortener)
       .then(({ data }: any) => {
         debugger;
-
         setUrl(data.shortUrl);
         setSubmitted(false);
         console.log(data);
@@ -119,18 +125,20 @@ const App: React.FC = () => {
                 type="text"
                 disabled={false}
                 required={true}
-                placeholder="Please write your URL here..."
+                placeholder="Please write or paste URL here..."
                 className="txt"
                 name="longUrl"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleChange(e)
                 }
+                ref={longUrlRef}
+                onFocus={onFocus}
               />
 
               <Button
                 type="submit"
                 title="Submit"
-                disabled={submitted ? true : false}
+                disabled={submitted ? true : false} //After submitting long URL button will be disable untill getting the response from the server
                 className="txt2"
               />
             </form>

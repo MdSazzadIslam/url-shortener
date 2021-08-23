@@ -10,6 +10,8 @@ interface TextBoxProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required: boolean;
   className: string;
+  ref: React.MutableRefObject<HTMLInputElement | null>;
+  onFocus: () => void;
 }
 
 const TextBox = ({
@@ -20,6 +22,8 @@ const TextBox = ({
   onChange,
   required,
   className,
+  ref,
+  onFocus,
 }: TextBoxProps) => {
   return (
     <input
@@ -30,6 +34,8 @@ const TextBox = ({
       onChange={(e) => onChange(e)}
       required={required}
       className={className}
+      ref={ref}
+      onFocus={onFocus}
     />
   );
 };

@@ -30,7 +30,6 @@ export async function bootstrap() {
     for (const exitSignal of exitSignals) {
       process.on(exitSignal, async () => {
         try {
-          await server.close();
           logger.info("App shutdown with success");
           process.exit(ExitStatus.Success);
         } catch (error) {
@@ -41,7 +40,7 @@ export async function bootstrap() {
     }
   } catch (error) {
     logger.error("App shutdown abnormally");
-    process.exit(1);
+    process.exit(ExitStatus.Failure);
   }
 }
 
