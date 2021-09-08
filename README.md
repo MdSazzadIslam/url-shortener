@@ -13,7 +13,7 @@ A simple URL shortener application using Typescript, Node.js, Express.js, React.
 > MongoDB
 
 # Backend 
-> cd server
+> cd backend
 
 > npm run dev
 
