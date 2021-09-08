@@ -1,5 +1,7 @@
 # url-shortener
 
+Don't forget to give this repo a ⭐ if you like and want to appreciate my efforts
+
 # Tech
 > TypeScript
 
@@ -23,3 +25,4 @@
 
 
 
+Don't forget to give this repo a ⭐ if you like and want to appreciate my efforts
