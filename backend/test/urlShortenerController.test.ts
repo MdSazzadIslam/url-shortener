@@ -39,7 +39,7 @@ describe("/GET/:shorturl", () => {
 });
 
 describe("/POST URL", () => {
-  it("it should not POST a url", (done) => {
+  it("it should POST a url", (done) => {
     let url = {
       longUrl: "https://sazzad-islam-88.vercel.app/",
     };

@@ -14,13 +14,12 @@ export class UrlShortenerController {
    * @route GET
    * @access Public
    */
-  public getUrls = (req: Request, res: Response) => {
-    this.urlShortener
-      .find({})
+  public getUrls(req: Request, res: Response) {
+    UrlShortener.find({})
       .exec()
-      .then((data: IUrlShortener[]) => {
+      .then((data) => {
         if (data != null) {
-          return res.status(200).json(data);
+          res.status(200).json(data);
         }
         return res.status(402).json({
           success: false,
@@ -35,7 +34,7 @@ export class UrlShortenerController {
           message: "Error occured while fetching the data " + error.message,
         });
       });
-  };
+  }
 
   /**
    * Fetching a longurl

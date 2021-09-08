@@ -12,7 +12,7 @@ export const validate = (req: Request, res: Response, next: NextFunction) => {
     errors.array().forEach((error) => {
       messages.push(error.msg);
     });
-    // logger.error("Middleware[create/update]", messages);
+
     return res.status(500).send({ message: messages });
   }
   return next();

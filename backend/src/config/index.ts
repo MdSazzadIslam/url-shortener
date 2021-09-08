@@ -14,14 +14,14 @@ class DBService {
   };
 
   constructor() {
-    this.connectWithRetry();
+    this.connectDB();
   }
 
   getMongoose() {
     return mongoose;
   }
 
-  connectWithRetry = () => {
+  connectDB = () => {
     logger.info("Attempting to connect database (will retry if needed)");
     mongoose
       .connect(this.mongoURI, this.mongooseOptions)
@@ -35,8 +35,12 @@ class DBService {
             .count} after ${retrySeconds} seconds):`,
           err
         );
-        setTimeout(this.connectWithRetry, retrySeconds * 1000);
+        setTimeout(this.connectDB, retrySeconds * 1000);
       });
+  };
+
+  disconnectDB = () => {
+    return mongoose.disconnect();
   };
 }
 export default DBService;
