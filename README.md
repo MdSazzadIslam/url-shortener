@@ -3,6 +3,9 @@ A simple shortener application using Typescript, Node.js, Express.js, React.js, 
 
 # Tech
 > Node.js
+
 > Express.js
+
 > React.js
+
 > MongoDB
